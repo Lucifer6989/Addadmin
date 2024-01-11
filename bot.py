@@ -25,19 +25,19 @@ async def is_authorized_user(_, __, message: Message):
 # Command to add user IDs to the database
 @app.on_message(filters.command("adduser") & filters.private)
 def add_user_to_db(client, message):
-    user_ids = message.text.split()[1:]  # Extract user IDs from the command
-    user_ids = [int(user_id) for user_id in user_ids if user_id.isdigit()]  # Ensure they are integers
-
-    if user_ids:
+    user_ids = message.text.split()[1:]  # Extract user IDs from the command
+    user_ids = [int(user_id) for user_id in user_ids if user_id.isdigit()]  # Ensure they are integers
+    
+    if user_ids:
         # Insert user IDs into the database
-        user_collection.update_one({}, {'$addToSet': {'user_ids': {'$each': user_ids}}}, upsert=True)
-        message.reply_text(f"User IDs {user_ids} added to the database.")
-    else:
-        message.reply_text("Invalid user IDs provided.")
+        user_collection.update_one({}, {'$addToSet': {'user_ids': {'$each': user_ids}}}, upsert=True)
+        message.reply_text(f"User IDs {user_ids} added to the database.")
+    else:
+        message.reply_text("Invalid user IDs provided.")
 
 # Command to check if the user is authorized and reply with "I am alive"
 @app.on_message(is_authorized_user & filters.command("start") & filters.private)
 def start_command(client, message):
-    message.reply_text("I am alive!")
+    message.reply_text("I am alive!")
 
 app.run()
