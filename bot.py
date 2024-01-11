@@ -16,7 +16,7 @@ db = client['user_db']
 user_collection = db['users']
 
 # Custom filter to check if the user is authorized
-async def is_authorized_user(_, __, message:Message):
+async def is_authorized_user(_, __, message: Message):
     user_id = message.from_user.id
     user_data = user_collection.find_one({})
 
