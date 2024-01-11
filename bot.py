@@ -3,6 +3,7 @@ from pyrogram.types import Message
 from pymongo import MongoClient
 
 # Replace 'YOUR_API_ID' and 'YOUR_API_HASH' with your Telegram API credentials.
+ADMINS = 1476517140
 api_id = '4783634'
 api_hash = 'f6c33f46599246676f75e153b615dbbc'
 bot_token = '6729277794:AAEUsO6oPaecOvmpCQJXEU-MqBNmgaOsVgA'
@@ -113,7 +114,7 @@ def clear_all_users(client, message):
     message.reply_text("All user IDs have been cleared from the database.")
 
 # Command to check if the user is authorized and reply with "I am alive"
-@app.on_message(filters.create(is_authorized_user) & filters.command("start") & filters.private)
+@app.on_message(filters.create(is_authorized_user) & filters.command("start") & filters.private & filters.user(ADMINS))
 def start_command(client, message):
     message.reply_text("I am alive!")
 
