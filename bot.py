@@ -55,6 +55,31 @@ def add_user_to_db(client, message):
     final_user_list = user_collection.find_one({})['user_ids']
     message.reply_text(f"Final list of user IDs in the database: {', '.join(map(str, final_user_list))}")
 
+@app.on_message(filters.command("removeuser") & filters.private)
+def remove_user_from_db(client, message):
+    user_ids_to_remove = message.text.split()[1:]  # Extract user IDs from the command
+    user_ids_to_remove = [int(user_id) for user_id in user_ids_to_remove if user_id.isdigit()]  # Ensure they are integers
+
+    if not user_ids_to_remove:
+        message.reply_text("Invalid user IDs provided.")
+        return
+
+    user_data = user_collection.find_one({})
+    existing_user_ids = user_data.get('user_ids', []) if user_data else []
+
+    # Separate user IDs into existing and not existing in the database
+    existing_ids_to_remove = [user_id for user_id in user_ids_to_remove if user_id in existing_user_ids]
+    non_existing_ids = [user_id for user_id in user_ids_to_remove if user_id not in existing_user_ids]
+
+    # Remove existing user IDs from the database
+    if existing_ids_to_remove:
+        user_collection.update_one({}, {'$pull': {'user_ids': {'$in': existing_ids_to_remove}}})
+        message.reply_text(f"Removed {len(existing_ids_to_remove)} user(s) from the database.")
+
+    # Reply with non-existing user IDs
+    if non_existing_ids:
+        message.reply_text(f"User IDs {', '.join(map(str, non_existing_ids))} not found in the database and ignored.")
+
 
 # Command to get authorized user IDs and names
 @app.on_message(filters.command("authusers") & filters.private)
