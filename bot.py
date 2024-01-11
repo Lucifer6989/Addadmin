@@ -28,14 +28,32 @@ async def is_authorized_user(_, __, message: Message):
 # Command to add user IDs to the database
 @app.on_message(filters.command("adduser") & filters.private)
 def add_user_to_db(client, message):
-    user_ids = message.text.split()[1:] #Extract user IDs from the command
-    user_ids = [int(user_id) for user_id in user_ids if user_id.isdigit()] # Ensure they are integers
-    
-    if user_ids: # Insert user IDs into the database
-        user_collection.update_one({}, {'$addToSet': {'user_ids': {'$each': user_ids}}}, upsert=True)
-        message.reply_text(f"User IDs {user_ids} added to the database.")
-    else:
+    user_ids_to_add = message.text.split()[1:]  # Extract user IDs from the command
+    user_ids_to_add = [int(user_id) for user_id in user_ids_to_add if user_id.isdigit()]  # Ensure they are integers
+
+    if not user_ids_to_add:
         message.reply_text("Invalid user IDs provided.")
+        return
+
+    user_data = user_collection.find_one({})
+    existing_user_ids = user_data.get('user_ids', []) if user_data else []
+
+    # Separate user IDs into already added and not added
+    already_added_ids = [user_id for user_id in user_ids_to_add if user_id in existing_user_ids]
+    new_user_ids = [user_id for user_id in user_ids_to_add if user_id not in existing_user_ids]
+
+    # Add new user IDs to the database
+    if new_user_ids:
+        user_collection.update_one({}, {'$addToSet': {'user_ids': {'$each': new_user_ids}}})
+        message.reply_text(f"Added {len(new_user_ids)} new user(s) to the database.")
+
+    # Reply with already added user IDs
+    if already_added_ids:
+        message.reply_text(f"User IDs {', '.join(map(str, already_added_ids))} already added and ignored.")
+
+    # Reply with the whole list of users finally added to the database
+    final_user_list = user_collection.find_one({})['user_ids']
+    message.reply_text(f"Final list of user IDs in the database: {', '.join(map(str, final_user_list))}")
 
 # Command to check if the user is authorized and reply with "I am alive"
 @app.on_message(filters.create(is_authorized_user) & filters.command("start") & filters.private)
