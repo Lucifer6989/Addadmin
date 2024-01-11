@@ -18,9 +18,9 @@ user_collection = db['users']
 # Custom filter to check if the user is authorized
 async def is_authorized_user(_, __, message: Message):
     user_id = message.from_user.id
-    user_data = user_collection.find_one({})
-
-    return user_data and 'user_ids' in user_data and user_id in user_data['user_ids']
+    user_data = user_collection.find_one({})
+    
+    return user_data and 'user_ids' in user_data and user_id in user_data['user_ids']
 
 # Command to add user IDs to the database
 @app.on_message(filters.command("adduser") & filters.private)
