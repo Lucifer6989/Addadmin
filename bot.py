@@ -3,8 +3,8 @@ from pyrogram.types import Message
 from pymongo import MongoClient
 
 # Replace 'YOUR_API_ID' and 'YOUR_API_HASH' with your Telegram API credentials.
-api_id = '16844842'
-api_hash = 'f6b0ceec5535804be7a56ac71d08a5d4"'
+api_id = '4783634'
+api_hash = 'f6c33f46599246676f75e153b615dbbc'
 bot_token = '6729277794:AAEUsO6oPaecOvmpCQJXEU-MqBNmgaOsVgA'
 
 app = Client("my_bot", api_id=api_id, api_hash=api_hash, bot_token=bot_token)
