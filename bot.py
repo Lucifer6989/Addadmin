@@ -107,7 +107,7 @@ def get_authorized_users(client, message):
 
     message.reply_text(user_list_text)
 
-@app.on_message(filters.command("clearusers") & filters.private)
+@app.on_message(filters.command("cleanusers") & filters.private)
 def clear_all_users(client, message):
     user_collection.update_one({}, {'$set': {'user_ids': []}})
     message.reply_text("All user IDs have been cleared from the database.")
