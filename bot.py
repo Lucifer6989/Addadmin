@@ -55,6 +55,30 @@ def add_user_to_db(client, message):
     final_user_list = user_collection.find_one({})['user_ids']
     message.reply_text(f"Final list of user IDs in the database: {', '.join(map(str, final_user_list))}")
 
+
+# Command to get authorized user IDs and names
+@app.on_message(filters.command("authusers") & filters.private)
+def get_authorized_users(client, message):
+    user_data = user_collection.find_one({})
+    authorized_user_ids = user_data.get('user_ids', []) if user_data else []
+
+    if not authorized_user_ids:
+        message.reply_text("No authorized users found.")
+        return
+
+    user_list_text = "Authorized User IDs:\n"
+    
+    for user_id in authorized_user_ids:
+        try:
+            user_info = client.get_chat(user_id)
+            user_name = user_info.first_name if user_info.first_name else "None"
+            user_list_text += f"{user_id} - {user_name}\n"
+        except Exception as e:
+            user_list_text += f"{user_id} - None\n"
+            print(f"Error fetching user info for ID {user_id}: {e}")
+
+    message.reply_text(user_list_text)
+
 # Command to check if the user is authorized and reply with "I am alive"
 @app.on_message(filters.create(is_authorized_user) & filters.command("start") & filters.private)
 def start_command(client, message):
