@@ -1,9 +1,15 @@
+import os
 from pyrogram import Client, filters
 from pyrogram.types import Message
 from pymongo import MongoClient
 
 # Replace 'YOUR_API_ID' and 'YOUR_API_HASH' with your Telegram API credentials.
-ADMINS = 1476517140
+try:
+    ADMINS=[]
+    for x in (os.environ.get("ADMINS", "1476517140").split()):
+        ADMINS.append(int(x))
+except ValueError:
+        raise Exception("Your Admins list does not contain valid integers.")
 api_id = '4783634'
 api_hash = 'f6c33f46599246676f75e153b615dbbc'
 bot_token = '6729277794:AAEUsO6oPaecOvmpCQJXEU-MqBNmgaOsVgA'
