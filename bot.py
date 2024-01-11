@@ -25,7 +25,7 @@ async def is_authorized_user(_, __, message: Message):
 # Command to add user IDs to the database
 @app.on_message(filters.command("adduser") & filters.private)
 def add_user_to_db(client, message):
-    user_ids = message.text.split()[1:]  # Extract user IDs from the command
+    user_ids = message.text.split()[1:] #Extract user IDs from the command
     user_ids = [int(user_id) for user_id in user_ids if user_id.isdigit()]  # Ensure they are integers
     
     if user_ids:
