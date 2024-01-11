@@ -35,7 +35,7 @@ def add_user_to_db(client, message):
         message.reply_text("Invalid user IDs provided.")
 
 # Command to check if the user is authorized and reply with "I am alive"
-@app.on_message(is_authorized_user & filters.command("start") & filters.private)
+@app.on_message(filters.create(is_authorized_user) & filters.command("start") & filters.private)
 def start_command(client, message):
     message.reply_text("I am alive!")
 
