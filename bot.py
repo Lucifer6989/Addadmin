@@ -49,7 +49,7 @@ def add_user_to_db(client, message):
 
     # Reply with already added user IDs
     if already_added_ids:
-        message.reply_text(f"User IDs {', '.join(map(str, already_added_ids))} already added and ignored.")
+        message.reply_text(f"User IDs {', '.join(map(str, already_added_ids))} already in db and so ignored.")
 
     # Reply with the whole list of users finally added to the database
     final_user_list = user_collection.find_one({})['user_ids']
@@ -78,8 +78,11 @@ def remove_user_from_db(client, message):
 
     # Reply with non-existing user IDs
     if non_existing_ids:
-        message.reply_text(f"User IDs {', '.join(map(str, non_existing_ids))} not found in the database and ignored.")
+        message.reply_text(f"User IDs {', '.join(map(str, non_existing_ids))} not found in the database and therefore ignored.")
 
+    # Reply with the whole list of users finally added to the database
+    final_user_list = user_collection.find_one({})['user_ids']
+    message.reply_text(f"Final list of user IDs in the database: {', '.join(map(str, final_user_list))}")
 
 # Command to get authorized user IDs and names
 @app.on_message(filters.command("authusers") & filters.private)
@@ -103,6 +106,11 @@ def get_authorized_users(client, message):
             print(f"Error fetching user info for ID {user_id}: {e}")
 
     message.reply_text(user_list_text)
+
+@app.on_message(filters.command("clearusers") & filters.private)
+def clear_all_users(client, message):
+    user_collection.update_one({}, {'$set': {'user_ids': []}})
+    message.reply_text("All user IDs have been cleared from the database.")
 
 # Command to check if the user is authorized and reply with "I am alive"
 @app.on_message(filters.create(is_authorized_user) & filters.command("start") & filters.private)
